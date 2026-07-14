@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Vendors — SUU Vending{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <div>
+        <p class="page-heading">Vendors</p>
+        <p class="page-sub">Manage suppliers and item sourcing.</p>
+    </div>
+    <div style="display: flex; gap: 10px;">
+        <a href="{% url 'vendors:vendor_item_add' %}" class="btn-save" style="text-decoration: none; background-color: #6c757d;">Link Item</a>
+        <a href="{% url 'vendors:vendor_add' %}" class="btn-save" style="text-decoration: none;">Add Vendor</a>
+    </div>
+</div>
+
+<div class="card" style="padding: 0; overflow: hidden">
+    <table class="stock-table">
+        <thead>
+            <tr>
+                <th>Vendor Name</th>
+                <th>Website</th>
+                <th>Contact Info</th>
+                <th>Items Sourced</th>
+                <th style="text-align: right;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for vendor in vendors %}
+            <tr>
+                <td>
+                    <a href="{% url 'vendors:vendor_detail' vendor.id %}" style="text-decoration: none; color: inherit;">
+                        <strong style="color: blue; text-decoration: underline;">{{ vendor.name }}</strong>
+                    </a>
+                </td>
+                <td>
+                    {% if vendor.website %}
+                        <a href="{{ vendor.website }}" target="_blank" style="color: blue; text-decoration: none;">Visit Site</a>
+                    {% else %}
+                        <span style="color: #9a9590;">N/A</span>
+                    {% endif %}
+                </td>
+                <td style="font-size: 0.85rem;">{{ vendor.contact_info|default:"--" }}</td>
+                <td>
+                    <span class="badge badge--online">{{ vendor.vendor_items.count }} Items</span>
+                </td>
+                <td style="text-align: right;">
+                    <a href="{% url 'vendors:vendor_edit' vendor.id %}" style="color: blue; font-size: 0.8rem; text-decoration: none; font-weight: 600;">Edit</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" style="text-align: center; padding: 40px; color: #9a9590;">
+                    No vendors found. Click "Add Vendor" to get started.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

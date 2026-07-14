@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}{{ vendor.name }} — Order List{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 20px;">
+    <a href="{% url 'vendors:vendor_list' %}" style="text-decoration: none; font-size: 0.8rem; color: #666;">&larr; Back to Vendors</a>
+    <p class="page-heading" style="margin-top: 10px;">{{ vendor.name }}</p>
+    {% if vendor.website %}
+        <a href="{{ vendor.website }}" target="_blank" class="btn-save" style="text-decoration: none; background-color: #6c757d; display: inline-block; margin-top: 5px;">Visit Vendor Website</a>
+    {% endif %}
+</div>
+
+<div class="card" style="padding: 0; overflow: hidden">
+    <table class="stock-table">
+        <thead>
+            <tr>
+                <th>Item</th>
+                <th>Current Backroom</th>
+                <th>Target (Min)</th>
+                <th>Order Package</th>
+                <th>Price/Unit</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for vi in vendor_items %}
+            <tr {% if vi.needs_reorder %}style="background-color: #fff8f8;"{% endif %}>
+                <td><strong>{{ vi.item.name }}</strong></td>
+                <td>{{ vi.item.level_in_backroom }}</td>
+                <td>{{ vi.item.min_level }}</td>
+                <td style="font-size: 0.85rem;">
+                    ${{ vi.cost_per_order }} / {{ vi.amount_received_per_order }} ct
+                </td>
+                <td>${{ vi.price_per_unit|stringformat:".2f" }}</td>
+                <td>
+                    {% if vi.needs_reorder %}
+                        <span class="badge" style="background-color: #dc3545; color: white;">ORDER NOW</span>
+                    {% else %}
+                        <span class="badge badge--online">Sufficient</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
