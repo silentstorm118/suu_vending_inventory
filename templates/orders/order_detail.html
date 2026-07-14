@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Order Details — {{ order.order_number }}{% endblock %}
+
+{% block content %}
+    <div style="margin-bottom: 20px;">
+        <a href="{% url 'orders:order_list' %}" style="text-decoration: none; font-size: 0.8rem; color: #666;">&larr; Back to Orders</a>
+        <p class="page-heading" style="margin-top: 10px;">{{ order.order_number }}</p>
+        <p class="page-sub">Status: <strong>{{ order.status }}</strong> | Created: {{ order.created_at|date:"M d, Y" }}</p>
+    </div>
+
+    <div class="card" style="padding: 0; overflow: hidden">
+        <table class="stock-table">
+            <thead>
+                <tr>
+                    <th>Item Name</th>
+                    <th>Vendor</th>
+                    <th>Qty Ordered (Cases)</th>
+                    <th>Qty to Backroom (Units)</th>
+                    <th>Total Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for line in items %}
+                <tr>
+                    <td><strong>{{ line.item.name }}</strong></td>
+                    <td>{{ line.vendor.name }}</td>
+                    <td>{{ line.quantity_ordered }}</td>
+                    <td>+{{ line.quantity_received }}</td>
+                    <td>${{ line.price_at_order }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr style="background-color: #f8f9fa; font-weight: bold;">
+                    <td colspan="4" style="text-align: right; padding: 15px;">Order Total:</td>
+                    <td style="padding: 15px;">${{ order.total_price }}</td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+
+    {% if order.status == 'PENDING' %}
+    <div style="margin-top: 20px;">
+        <form action="{% url 'orders:receive_order' order.id %}" method="POST">
+            {% csrf_token %}
+            <button type="submit" class="btn-save" style="background-color: #28a745;">
+                Confirm Receipt & Update Stock
+            </button>
+        </form>
+    </div>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}New Purchase Order{% endblock %}
+
+{% block content %}
+<p class="page-heading">New Purchase Order</p>
+<p class="page-sub">Select a vendor and add the items you are ordering.</p>
+
+<form method="POST" id="order-form">
+    {% csrf_token %}
+
+    <div class="card" style="margin-bottom: 20px;">
+        <label style="display: block; font-weight: 600; margin-bottom: 8px;">Purchase Order Number</label>
+        <input type="text" name="po_number" placeholder="e.g., PO-2024-001 (leave blank to auto-generate)"
+               style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box;">
+    </div>
+
+    <div class="card" style="margin-bottom: 20px;">
+        <label style="display: block; font-weight: 600; margin-bottom: 8px;">Select Vendor</label>
+        <select name="vendor" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
+            <option value="">-- Choose Vendor --</option>
+            {% for v in vendors %}
+                <option value="{{ v.id }}">{{ v.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="card" style="padding: 0; overflow: hidden; margin-bottom: 20px;">
+        <table class="stock-table" id="items-table">
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th style="width: 150px;">Quantity (Packages)</th>
+                    <th style="width: 50px;"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="item-row">
+                    <td>
+                        <select name="item[]" required style="width: 100%; padding: 8px; border: 1px solid #eee; border-radius: 4px;">
+                            <option value="">-- Select Item --</option>
+                            {% for i in items %}
+                                <option value="{{ i.id }}">{{ i.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                    <td>
+                        <input type="number" name="quantity[]" value="1" min="1" required
+                               style="width: 100%; padding: 8px; border: 1px solid #eee; border-radius: 4px;">
+                    </td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+        <div style="padding: 15px; border-top: 1px solid #eee; background: #fafafa;">
+            <button type="button" onclick="addRow()" style="background: #6c757d; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">
+                + Add Another Item
+            </button>
+        </div>
+    </div>
+
+    <div style="display: flex; gap: 10px;">
+        <button type="submit" class="btn-save">Create & Save Order</button>
+        <a href="{% url 'orders:order_list' %}" style="padding: 10px; color: #666; text-decoration: none;">Cancel</a>
+    </div>
+</form>
+
+<script>
+function addRow() {
+    const table = document.getElementById('items-table').getElementsByTagName('tbody')[0];
+    const firstRow = table.getElementsByClassName('item-row')[0];
+    const newRow = firstRow.cloneNode(true);
+
+    // Clear the values in the cloned row
+    const inputs = newRow.getElementsByTagName('input');
+    const selects = newRow.getElementsByTagName('select');
+    for (let input of inputs) { input.value = "1"; }
+    for (let select of selects) { select.selectedIndex = 0; }
+
+    // Add a delete button to the new row
+    newRow.cells[2].innerHTML = '<button type="button" onclick="this.closest(\'tr\').remove()" style="color: red; border: none; background: none; cursor: pointer;">&times;</button>';
+
+    table.appendChild(newRow);
+}
+</script>
+{% endblock %}

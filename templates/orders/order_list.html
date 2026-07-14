@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}Orders — SUU Vending{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <div>
+        <p class="page-heading">Purchase Orders</p>
+        <p class="page-sub">Track incoming stock and update inventory.</p>
+    </div>
+    <a href="{% url 'orders:order_add' %}" class="btn-save" style="text-decoration: none;">New Order</a>
+</div>
+
+<div class="card" style="padding: 0; overflow: hidden">
+    <table class="stock-table">
+        <thead>
+            <tr>
+                <th>Order #</th>
+                <th>Status</th>
+                <th>Total Price</th>
+                <th>Date Created</th>
+                <th style="text-align: right;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+            <tr>
+                <td>
+                    <a href="{% url 'orders:order_detail' order.id %}" style="text-decoration: none;">
+                        <strong style="color: blue; text-decoration: underline;">{{ order.order_number }}</strong>
+                    </a>
+                </td>
+                <td>
+                    {% if order.status == 'PENDING' %}
+                        <span class="badge badge--warning">Pending</span>
+                    {% elif order.status == 'RECEIVED' %}
+                        <span class="badge badge--online">Received</span>
+                    {% else %}
+                        <span class="badge" style="background-color: #6c757d; color: white;">Cancelled</span>
+                    {% endif %}
+                </td>
+                <td>${{ order.total_price }}</td>
+                <td style="color: #9a9590; font-size: 0.85rem;">{{ order.created_at|date:"M d, Y" }}</td>
+                <td style="text-align: right;">
+                    {% if order.status == 'PENDING' %}
+                    <form action="{% url 'orders:receive_order' order.id %}" method="POST" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn-save"
+                                style="padding: 4px 10px; font-size: 0.7rem; background-color: #28a745;">
+                            Mark Received
+                        </button>
+                    </form>
+                    {% else %}
+                        <span style="font-size: 0.75rem; color: #9a9590;">
+                            Processed {{ order.received_at|date:"M d" }}
+                        </span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" style="text-align: center; padding: 40px; color: #9a9590;">
+                    No orders found.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
