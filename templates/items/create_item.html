@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}Create New Item — SUU Vending{% endblock %}
+{% block nav_items %}active{% endblock %}
+
+{% block topbar_title %}Create New Item{% endblock %}
+{% block topbar_meta %}Inventory Management{% endblock %}
+
+{% block content %}
+  {# ── Django Messages ── #}
+  {% if messages %}
+    <div class="messages-container">
+      {% for message in messages %}
+        <div class="alert alert--{{ message.tags }}">
+          {{ message }}
+          <button class="alert__close" onclick="this.parentElement.remove()">&times;</button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <p class="page-heading">Items</p>
+  <p class="page-sub">Create, edit, and manage inventory items.</p>
+
+  {# ── Create form (matches your user form design) ── #}
+  <div class="new-user-card">
+    <div class="new-user-card__title">Add New Item</div>
+
+    <form method="post" action="{% url 'items:create_product' %}">
+      {% csrf_token %}
+      <div class="new-user-fields">
+
+        <div class="field-group-sm">
+          <label for="id_name">Item Name</label>
+          <input type="text" name="name" id="id_name"
+                 placeholder="Coca-Cola 12oz"
+                 value="{{ form.name.value|default:'' }}"
+                 class="field-full{% if form.name.errors %} is-invalid{% endif %}"
+                 required />
+          {% if form.name.errors %}
+            <span class="field-error">{{ form.name.errors.0 }}</span>
+          {% endif %}
+        </div>
+
+        <div class="field-group-sm">
+          <label for="id_level_in_backroom">Initial Backroom Stock</label>
+          <input type="number" name="level_in_backroom" id="id_level_in_backroom"
+                 placeholder="0"
+                 value="{{ form.level_in_backroom.value|default:0 }}"
+                 class="field-full{% if form.level_in_backroom.errors %} is-invalid{% endif %}"
+                 required />
+          {% if form.level_in_backroom.errors %}
+            <span class="field-error">{{ form.level_in_backroom.errors.0 }}</span>
+          {% endif %}
+        </div>
+
+        <div class="field-group-sm">
+          <label for="id_min_level">Min. Stock Level</label>
+          <input type="number" name="min_level" id="id_min_level"
+                 placeholder="10"
+                 value="{{ form.min_level.value|default:10 }}"
+                 class="field-full{% if form.min_level.errors %} is-invalid{% endif %}"
+                 required />
+          {% if form.min_level.errors %}
+            <span class="field-error">{{ form.min_level.errors.0 }}</span>
+          {% endif %}
+        </div>
+
+        <div style="display:flex;align-items:flex-end;">
+          <button type="submit" class="btn-primary">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add Item
+          </button>
+        </div>
+
+        <div style="display:flex;align-items:flex-end;">
+          <a href="{% url 'items:item_list' %}" class="btn-primary" style="background:#f5f4f0;color:#1a1917;border:1px solid #dddbd4;">Cancel</a>
+        </div>
+
+      </div>
+    </form>
+  </div>
+{% endblock %}

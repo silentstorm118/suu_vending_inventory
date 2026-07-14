@@ -1490,3 +1490,20 @@ a {
         transform: translateY(0);
     }
 }
+
+/* Validation states */
+.is-invalid {
+  border-color: #fca5a5 !important;
+  background-color: #fff5f5 !important;
+}
+.is-invalid:focus {
+  border-color: #ef4444 !important;
+}
+
+.field-error {
+  font-family: "DM Mono", monospace;
+  font-size: 0.62rem;
+  color: #dc2626;
+  margin-top: 4px;
+  display: block;
+}
