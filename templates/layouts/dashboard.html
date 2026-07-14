@@ -3,21 +3,37 @@
 {% block nav_dashboard %}active{% endblock %}
 
 {% block content %}
-<!-- Header + Action Button -->
-<div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+<!-- Header + Quick Actions -->
+<div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px;">
     <div>
-        <p class="page-heading" style="margin-bottom: 4px;">Overview</p>
-        <p class="page-sub" style="margin-bottom: 0;">Current machine status and backroom inventory at a glance.</p>
+        <p class="page-heading">Overview</p>
+        <p class="page-sub">Real-time inventory status, pending orders, and quick actions.</p>
     </div>
-
-    <a href="{% url 'reports:generate_report' %}" class="btn-primary">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
-        </svg>
-        Generate Low Stock Report
-    </a>
+    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <a href="{% url 'reports:generate_report' %}" class="btn-primary">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            Generate Purchase Report
+        </a>
+        <a href="{% url 'orders:order_add' %}" class="btn-primary" style="background:#f5f4f0;color:#1a1917;border:1px solid #dddbd4;">
+            New Order
+        </a>
+    </div>
 </div>
 
+{% if messages %}
+<div class="messages-container">
+    {% for message in messages %}
+    <div class="alert alert--{{ message.tags }}">
+        {{ message }}
+        <button class="alert__close" onclick="this.parentElement.remove()">&times;</button>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<!-- Key Metrics -->
 <div class="grid-3" style="margin-bottom: 24px">
     <div class="stat-card">
         <div class="stat-card__label">Items Low Stock</div>
@@ -33,6 +49,84 @@
         <div class="stat-card__label">Total SKUs</div>
         <div class="stat-card__value stat-card__value--ink">{{ total_skus }}</div>
         <div class="stat-card__foot">tracked items</div>
+    </div>
+</div>
+
+<!-- Low Stock Alert Strip -->
+{% if low_stock_count > 0 %}
+<div class="alert-strip" style="margin-bottom: 24px;">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+    </svg>
+    <div>
+        <strong>{{ low_stock_count }} item(s)</strong> are below minimum stock levels.
+        <a href="{% url 'reports:generate_report' %}" style="color: #d97706; font-weight: 600;">Generate Purchase Report →</a>
+    </div>
+</div>
+{% endif %}
+
+<!-- Activity & Orders Grid -->
+<div class="grid-2" style="margin-bottom: 24px;">
+    <!-- Recent Stock Changes -->
+    <div class="card" style="padding: 0; overflow: hidden;">
+        <div style="padding: 18px 20px; border-bottom: 1px solid #dddbd4;">
+            <h3 class="section-title" style="margin:0;">Recent Stock Changes</h3>
+        </div>
+        <table class="log-table" style="width: 100%;">
+            <tbody>
+                {% for tx in recent_transactions %}
+                <tr>
+                    <td style="padding: 12px 16px;">
+                        <div style="font-weight: 500;">{{ tx.item.name }}</div>
+                        <div class="ts">{{ tx.note|default:"Manual Adjustment" }}</div>
+                    </td>
+                    <td style="text-align: right; padding: 12px 16px;">
+                        <span class="delta {% if tx.quantity > 0 %}delta--pos{% else %}delta--neg{% endif %}">
+                            {{ tx.quantity|add:0 }}
+                        </span>
+                    </td>
+                    <td class="ts" style="text-align: right; padding: 12px 16px;">{{ tx.timestamp|date:"M d, H:i" }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3" style="text-align: center; padding: 32px; color: #9a9590;">
+                        No recent activity.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pending Orders -->
+    <div class="card" style="padding: 0; overflow: hidden;">
+        <div style="padding: 18px 20px; border-bottom: 1px solid #dddbd4;">
+            <h3 class="section-title" style="margin:0;">Pending Orders</h3>
+        </div>
+        <table class="log-table" style="width: 100%;">
+            <tbody>
+                {% for order in pending_orders_list %}
+                <tr>
+                    <td style="padding: 12px 16px;">
+                        <div style="font-weight: 500;">{{ order.order_number }}</div>
+                        <div class="ts">{{ order.created_at|date:"M d, Y" }}</div>
+                    </td>
+                    <td style="padding: 12px 16px;">
+                        <span class="role-tag" style="background: #fef3c7; color: #92400e;">${{ order.total_price }}</span>
+                    </td>
+                    <td style="text-align: right; padding: 12px 16px;">
+                        <a href="{% url 'orders:order_detail' order.id %}" style="font-size: 0.78rem; color: #c8102e; font-weight: 600;">View →</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3" style="text-align: center; padding: 32px; color: #9a9590;">
+                        No pending orders.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 </div>
 {% endblock %}
