@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — SUU Vending{% endblock %}
+{% block nav_dashboard %}active{% endblock %}
+
+{% block content %}
+<p class="page-heading">Overview</p>
+<p class="page-sub">Current machine status and backroom inventory at a glance.</p>
+
+<div class="grid-3" style="margin-bottom: 24px">
+    <div class="stat-card">
+        <div class="stat-card__label">Items Low Stock</div>
+        <div class="stat-card__value stat-card__value--red">{{ low_stock_count }}</div>
+        <div class="stat-card__foot">need reorder</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-card__label">Pending Orders</div>
+        <div class="stat-card__value stat-card__value--amber">{{ pending_orders }}</div>
+        <div class="stat-card__foot">incoming stock</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-card__label">Total SKUs</div>
+        <div class="stat-card__value stat-card__value--ink">{{ total_skus }}</div>
+        <div class="stat-card__foot">tracked items</div>
+    </div>
+</div>
+{% endblock %}
