@@ -137,25 +137,24 @@ AUTHENTICATION_BACKENDS = [
     "allauth.account.auth_backends.AuthenticationBackend",
 ]
 
-if DEBUG == False:
-    # Security Settings
-    SECURE_SSL_REDIRECT = env.bool("SECURE_SSL_REDIRECT", default=False)
-    SESSION_COOKIE_SECURE = env.bool("SESSION_COOKIE_SECURE", default=False)
-    CSRF_COOKIE_SECURE = env.bool("CSRF_COOKIE_SECURE", default=False)
-    SECURE_HSTS_SECONDS = env.int("SECURE_HSTS_SECONDS", default=0)
-    SECURE_BROWSER_XSS_FILTER = True
-    SECURE_CONTENT_TYPE_NOSNIFF = True
-    X_FRAME_OPTIONS = "DENY"
+# Security Settings
+SECURE_SSL_REDIRECT = env.bool("SECURE_SSL_REDIRECT", default=False)
+SESSION_COOKIE_SECURE = env.bool("SESSION_COOKIE_SECURE", default=False)
+CSRF_COOKIE_SECURE = env.bool("CSRF_COOKIE_SECURE", default=False)
+SECURE_HSTS_SECONDS = env.int("SECURE_HSTS_SECONDS", default=0)
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = "DENY"
 
-    # Allauth Settings
-    ACCOUNT_EMAIL_VERIFICATION = env("ACCOUNT_EMAIL_VERIFICATION", default="mandatory")
-    ACCOUNT_SIGNUP_FIELDS = ["email*", "username*", "password1*", "password2*"]
-    LOGIN_REDIRECT_URL = "/"
-    LOGOUT_REDIRECT_URL = "/"
+# Allauth Settings
+ACCOUNT_EMAIL_VERIFICATION = env("ACCOUNT_EMAIL_VERIFICATION", default="mandatory")
+ACCOUNT_SIGNUP_FIELDS = ["email*", "username*", "password1*", "password2*"]
+LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "/"
 
-    # Session Settings
-    SESSION_EXPIRE_AT_BROWSER_CLOSE = True
-    SESSION_COOKIE_AGE = 3600 * 24 * 7
+# Session Settings
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+SESSION_COOKIE_AGE = 3600 * 24 * 7
 
 
 ACCOUNT_LOGOUT_ON_GET = True
