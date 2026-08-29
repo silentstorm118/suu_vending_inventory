@@ -18,30 +18,29 @@
   <nav class="sidebar__nav">
     <span class="sidebar__label">Main</span>
 
-    <a href="{% url 'dashboard:dashboard' %}" class="nav-link {% block nav_dashboard %}{% endblock %}">
+    <a href="{% url 'dashboard:dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %} {% block nav_dashboard %}{% endblock %}">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
       Dashboard
     </a>
-    <a href="{% url 'items:item_list' %}" class="nav-link {% block nav_items %}{% endblock %}">
+    <a href="{% url 'items:item_list' %}" class="nav-link {% if request.resolver_match.url_name == 'item_list' %}active{% endif %} {% block nav_items %}{% endblock %}">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/></svg>
       Products
     </a>
-      <a href="{% url 'vendors:vendor_list' %}" class="nav-link {% block nav_vendors %}{% endblock %}">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polyline points="16 8 20 8 23 11 23 16 16 16"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
-        Vendors
+    <a href="{% url 'vendors:vendor_list' %}" class="nav-link {% if request.resolver_match.url_name == 'vendor_list' %}active{% endif %} {% block nav_vendors %}{% endblock %}">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polyline points="16 8 20 8 23 11 23 16 16 16"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+      Vendors
     </a>
-    <a href="{% url 'orders:order_list' %}" class="nav-link {% block nav_orders %}{% endblock %}">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><path d="M9 14l2 2 4-4"/></svg>
-        Orders
+    <a href="{% url 'orders:order_list' %}" class="nav-link {% if request.resolver_match.url_name == 'order_list' %}active{% endif %} {% block nav_orders %}{% endblock %}">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><path d="M9 14l2 2 4-4"/></svg>
+      Orders
     </a>
 
     {% if request.user.is_staff %}
         <span class="sidebar__label">Admin</span>
-        <a href="{% url 'users:user_list' %}" class="nav-link {% block nav_users %}{% endblock %}">
+        <a href="{% url 'users:user_list' %}" class="nav-link {% if request.resolver_match.url_name == 'user_list' %}active{% endif %} {% block nav_users %}{% endblock %}">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
             Manage Users
         </a>
-
     {% endif %}
   </nav>
 

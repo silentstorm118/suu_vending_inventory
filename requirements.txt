@@ -3,6 +3,7 @@ charset-normalizer==3.4.9
 Django==6.0.7
 django-allauth==65.18.0
 django-environ==0.14.0
+django-htmx==1.29.0
 gunicorn==26.0.0
 packaging==26.2
 pillow==12.3.0

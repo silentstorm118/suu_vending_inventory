@@ -2,6 +2,17 @@
 {% block title %}New Purchase Order{% endblock %}
 
 {% block content %}
+<!-- Include Tom Select CSS & JS CDN -->
+<link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
+
+<style>
+    /* Custom height to fit ~12-15 items before scrolling */
+    .ts-dropdown .ts-dropdown-content {
+        max-height: 350px !important;
+    }
+</style>
+
 <p class="page-heading">New Purchase Order</p>
 <p class="page-sub">Select a vendor and add the items you are ordering.</p>
 
@@ -16,7 +27,7 @@
 
     <div class="card" style="margin-bottom: 20px;">
         <label style="display: block; font-weight: 600; margin-bottom: 8px;">Select Vendor</label>
-        <select name="vendor" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
+        <select name="vendor" id="vendor-select" required style="width: 100%;">
             <option value="">-- Choose Vendor --</option>
             {% for v in vendors %}
                 <option value="{{ v.id }}">{{ v.name }}</option>
@@ -24,7 +35,7 @@
         </select>
     </div>
 
-    <div class="card" style="padding: 0; overflow: hidden; margin-bottom: 20px;">
+    <div class="card" style="padding: 0; overflow: visible; margin-bottom: 20px;">
         <table class="stock-table" id="items-table">
             <thead>
                 <tr>
@@ -36,7 +47,7 @@
             <tbody>
                 <tr class="item-row">
                     <td>
-                        <select name="item[]" required style="width: 100%; padding: 8px; border: 1px solid #eee; border-radius: 4px;">
+                        <select name="item[]" class="item-select-field" required style="width: 100%;">
                             <option value="">-- Select Item --</option>
                             {% for i in items %}
                                 <option value="{{ i.id }}">{{ i.name }}</option>
@@ -65,21 +76,61 @@
 </form>
 
 <script>
+function initTomSelect(element) {
+    if (element && !element.tomselect) {
+        new TomSelect(element, {
+            create: false,
+            maxOptions: null,
+            sortField: { field: "text", direction: "asc" }
+        });
+    }
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    initTomSelect(document.getElementById('vendor-select'));
+
+    document.querySelectorAll('.item-select-field').forEach(function(selectEl) {
+        initTomSelect(selectEl);
+    });
+});
+
 function addRow() {
     const table = document.getElementById('items-table').getElementsByTagName('tbody')[0];
-    const firstRow = table.getElementsByClassName('item-row')[0];
-    const newRow = firstRow.cloneNode(true);
+    const newRow = document.createElement('tr');
+    newRow.className = 'item-row';
 
-    // Clear the values in the cloned row
-    const inputs = newRow.getElementsByTagName('input');
-    const selects = newRow.getElementsByTagName('select');
-    for (let input of inputs) { input.value = "1"; }
-    for (let select of selects) { select.selectedIndex = 0; }
+    const originalSelect = document.querySelector('.item-select-field');
+    const optionsHtml = originalSelect ? originalSelect.innerHTML : '';
 
-    // Add a delete button to the new row
-    newRow.cells[2].innerHTML = '<button type="button" onclick="this.closest(\'tr\').remove()" style="color: red; border: none; background: none; cursor: pointer;">&times;</button>';
+    newRow.innerHTML = `
+        <td>
+            <select name="item[]" class="item-select-field" required style="width: 100%;">
+                ${optionsHtml}
+            </select>
+        </td>
+        <td>
+            <input type="number" name="quantity[]" value="1" min="1" required
+                   style="width: 100%; padding: 8px; border: 1px solid #eee; border-radius: 4px;">
+        </td>
+        <td style="text-align: center;">
+            <button type="button" onclick="removeRow(this)" style="color: red; border: none; background: none; cursor: pointer; font-size: 1.2rem; line-height: 1;">&times;</button>
+        </td>
+    `;
 
     table.appendChild(newRow);
+
+    const newSelect = newRow.querySelector('.item-select-field');
+    initTomSelect(newSelect);
+}
+
+function removeRow(button) {
+    const row = button.closest('tr');
+    const select = row.querySelector('.item-select-field');
+
+    if (select && select.tomselect) {
+        select.tomselect.destroy();
+    }
+    row.remove();
 }
 </script>
 {% endblock %}

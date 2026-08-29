@@ -31,6 +31,22 @@
     </div>
 </div>
 
+<!-- Search Bar (HTMX Enabled) -->
+<div style="margin-bottom: 16px;">
+    <input
+        type="search"
+        name="q"
+        placeholder="Search items by name..."
+        value="{{ request.GET.q|default:'' }}"
+        hx-get="{% url 'items:item_list' %}"
+        hx-trigger="keyup changed delay:200ms, search"
+        hx-target="tbody"
+        hx-select="tbody > *"
+        hx-push-url="true"
+        style="width: 100%; max-width: 400px; padding: 10px 14px; border: 1px solid #e1e1e1; border-radius: 8px; font-size: 0.9rem; font-family: inherit;"
+    >
+</div>
+
 <div class="card" style="padding: 0; overflow: hidden">
     <table class="stock-table">
         <thead>
@@ -43,43 +59,13 @@
                 <th>Last Updated</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody id="item-table-body">
             {% for item in items %}
-            <tr>
-                <td><strong>{{ item.name }}</strong></td>
-                <td>{{ item.level_in_backroom }}</td>
-                <td>{{ item.level_in_machines }}</td>
-                <td>
-                    {% if item.is_out %}
-                        <span class="badge" style="background-color: #dc3545; color: white; padding: 2px 4px; border-radius: 4px; font-size: 0.7rem; font-weight: 600;">
-                            No Stock
-                        </span>
-                    {% elif item.is_low %}
-                        <span class="badge badge--warning">Low Stock</span>
-                    {% else %}
-                        <span class="badge badge--online">OK</span>
-                    {% endif %}
-                </td>
-                <td>
-                    <form action="{% url 'items:update_backroom' item.id %}" method="POST" style="display: flex; gap: 8px; align-items: center;">
-                        {% csrf_token %}
-                        <input type="number" name="adjustment" placeholder="+/-" required
-                               style="width: 65px; padding: 6px; border: 1px solid #e1e1e1; border-radius: 6px; font-size: 0.8rem; font-family: inherit;">
-
-                        <button type="submit"
-                                style="background-color: blue; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; cursor: pointer; white-space: nowrap;">
-                            Update
-                        </button>
-                    </form>
-                </td>
-                <td style="font-family: 'DM Mono', monospace; font-size: 0.68rem; color: #9a9590;">
-                    {{ item.updated_at|date:"M d, H:i" }}
-                </td>
-            </tr>
+            {% include "items/item_row.html" %}
             {% empty %}
             <tr>
                 <td colspan="6" style="text-align: center; padding: 40px; color: #9a9590;">
-                    No items in database.
+                    No items found matching your query.
                 </td>
             </tr>
             {% endfor %}

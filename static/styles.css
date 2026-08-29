@@ -1507,3 +1507,55 @@ a {
   margin-top: 4px;
   display: block;
 }
+
+
+/* Vertical Form Layout Extensions */
+.form-page-container {
+    max-width: 520px;
+    margin: 0 auto;
+}
+
+.form-header {
+    margin-bottom: 20px;
+}
+
+.form-card {
+    padding: 28px;
+}
+
+.vertical-form-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.form-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 8px;
+    padding-top: 16px;
+    border-top: 1px solid #dddbd4;
+}
+
+.btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "Sora", sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 6px;
+    background: #f5f4f0;
+    color: #1a1917;
+    border: 1px solid #dddbd4;
+    cursor: pointer;
+    transition: background 150ms, border-color 150ms;
+    text-decoration: none;
+}
+
+.btn-secondary:hover {
+    background: #e8e5e0;
+    border-color: #b0ada6;
+}

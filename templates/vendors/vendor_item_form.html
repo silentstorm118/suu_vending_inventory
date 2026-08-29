@@ -19,11 +19,21 @@
 
         <div style="margin-bottom: 15px;">
             <label style="display: block; font-weight: 600; margin-bottom: 5px;">Select Item</label>
-            <select name="item" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
+
+            <!-- Input tied to list attribute -->
+            <input type="text"
+                   name="item_name"
+                   list="item-list"
+                   placeholder="Type to search item..."
+                   required
+                   style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
+
+            <!-- Datalist providing suggestions -->
+            <datalist id="item-list">
                 {% for i in items %}
-                    <option value="{{ i.id }}">{{ i.name }}</option>
+                    <option value="{{ i.name }}" data-id="{{ i.id }}"></option>
                 {% endfor %}
-            </select>
+            </datalist>
         </div>
 
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">

@@ -1,4 +1,5 @@
 {% load static %}
+{% load django_htmx %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,8 +7,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}SUU Vending Inventory{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'styles.css' %}">
+
+    <!-- django-htmx recommended script loader -->
+    {% htmx_script %}
+
+    <!-- Alpine.js Core (deferred as required by Alpine v3) -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
-<body>
+<body hx-headers='{"x-csrftoken": "{{ csrf_token }}"}'>
     <div class="app {% if request.user.is_authenticated %}app--with-sidebar{% endif %}">
         {% if request.user.is_authenticated %}
             {% include "layouts/navbar.html" %}
@@ -18,9 +25,19 @@
                 {% if messages %}
                     <div class="messages-container">
                         {% for message in messages %}
-                            <div class="alert alert--{{ message.tags }}">
-                                {{ message }}
-                                <button class="alert__close" onclick="this.parentElement.remove();">&times;</button>
+                            <div
+                                class="alert alert--{{ message.tags }}"
+                                x-data="{ show: true }"
+                                x-init="setTimeout(() => show = false, 4000)"
+                                x-show="show"
+                                x-transition.duration.200ms
+                            >
+                                <span>{{ message }}</span>
+                                <button
+                                    type="button"
+                                    class="alert__close"
+                                    @click="show = false"
+                                >&times;</button>
                             </div>
                         {% endfor %}
                     </div>
